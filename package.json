@@ -1,0 +1,17 @@
+{
+  "name": "1payout-sheet",
+  "version": "1.0.0",
+  "description": "Payout Management & Productivity Tracking System",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sql.js": "^1.9.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "express-rate-limit": "^7.1.4"
+  }
+}
