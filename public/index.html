@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1PAYOUT SHEET — Payout Management System</title>
+  <meta name="description" content="Track tasks, manage payouts, and monitor team productivity with 1PAYOUT SHEET.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ═══ Toast Container ═══ -->
+  <div id="toast-container"></div>
+
+  <!-- ═══ AUTH SCREEN ═══ -->
+  <div class="screen active" id="auth-screen">
+    <div class="auth-container glass-card">
+      <div class="auth-header">
+        <div class="logo-icon">💰</div>
+        <h1>1PAYOUT SHEET</h1>
+        <p>Payout Management System</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Login</button>
+        <button class="auth-tab" data-tab="register">Register</button>
+      </div>
+      <form class="auth-form active" id="login-form">
+        <div class="input-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" required autocomplete="username">
+        </div>
+        <div class="input-group">
+          <label for="login-password">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="login-password" required autocomplete="current-password">
+            <button type="button" class="toggle-password" data-target="login-password">👁</button>
+          </div>
+        </div>
+        <div id="login-error" class="form-error"></div>
+        <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+      </form>
+      <form class="auth-form" id="register-form">
+        <div class="input-group">
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" required minlength="3" maxlength="30">
+        </div>
+        <div class="input-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" required minlength="6">
+        </div>
+        <div class="input-group">
+          <label for="reg-confirm">Confirm Password</label>
+          <input type="password" id="reg-confirm" required>
+        </div>
+        <div id="register-error" class="form-error"></div>
+        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ DASHBOARD SCREEN ═══ -->
+  <div class="screen" id="dashboard-screen">
+    <header class="top-bar glass-card">
+      <div class="brand">
+        <span class="brand-icon">💰</span>
+        <span class="brand-name">1PAYOUT SHEET</span>
+      </div>
+      <div class="user-controls">
+        <button class="profile-trigger" id="profile-trigger" title="Account Settings">
+          <span class="user-avatar" id="user-avatar">U</span>
+          <span class="user-name" id="user-name">User</span>
+          <span class="role-tag" id="role-tag">user</span>
+          <span class="chevron">▾</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="logout-btn" title="Logout">🚪</button>
+      </div>
+    </header>
+
+    <!-- ═══ Profile Panel (slides under header) ═══ -->
+    <div class="profile-panel glass-card" id="profile-panel" style="display:none">
+      <div class="profile-panel-header">
+        <h3>👤 Account Settings</h3>
+        <button class="btn btn-ghost btn-sm" id="close-profile-btn">✖</button>
+      </div>
+      <div class="form-grid">
+        <div class="input-group">
+          <label for="primary-account">Primary Account</label>
+          <input type="text" id="primary-account" placeholder="u/reddit_username">
+        </div>
+        <div class="input-group">
+          <label for="alt-1">Alt Account 1</label>
+          <input type="text" id="alt-1" placeholder="Optional">
+        </div>
+        <div class="input-group">
+          <label for="alt-2">Alt Account 2</label>
+          <input type="text" id="alt-2" placeholder="Optional">
+        </div>
+        <div class="input-group">
+          <label for="alt-3">Alt Account 3</label>
+          <input type="text" id="alt-3" placeholder="Optional">
+        </div>
+        <div class="input-group">
+          <label for="reddit-cqs">Reddit CQS</label>
+          <select id="reddit-cqs">
+            <option value="Highest">Highest</option>
+            <option value="High">High</option>
+            <option value="Moderate" selected>Moderate</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn btn-primary" id="save-account-btn">💾 Save Account</button>
+        <button class="btn btn-ghost admin-only" id="change-password-btn" style="display:none">🔑 Change
+          Password</button>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+      <button class="nav-btn active" data-view="dashboard">📊 Dashboard</button>
+      <button class="nav-btn" data-view="submit-task">📝 Submit Task</button>
+      <button class="nav-btn" data-view="my-tasks">📋 My Tasks</button>
+      <button class="nav-btn" data-view="history">📜 History</button>
+      <button class="nav-btn admin-only" data-view="admin" style="display:none">⚙️ Admin</button>
+    </nav>
+
+    <!-- ═══ DASHBOARD VIEW ═══ -->
+    <div class="view active" id="view-dashboard">
+      <section class="glass-card section-card">
+        <div class="section-header">
+          <h2>💰 Payout Summary</h2>
+          <span class="cqs-badge" id="cqs-badge">Moderate</span>
+        </div>
+        <div id="payout-breakdown"></div>
+        <div class="payout-total-row">
+          <span>Total Payout</span>
+          <span class="payout-total" id="payout-total">₹0.00</span>
+        </div>
+        <div class="pending-notice" id="pending-notice" style="display:none">
+          <span>⏳ <span id="pending-count">0</span> task(s) pending verification</span>
+        </div>
+        <!-- Admin-only payout controls -->
+        <div class="payout-actions admin-only" id="admin-payout-actions" style="display:none">
+          <button class="btn btn-ghost btn-sm" id="record-pending-btn">⏳ Pending</button>
+          <button class="btn btn-warning btn-sm" id="record-due-btn">📋 Due</button>
+          <button class="btn btn-primary btn-sm" id="record-paid-btn">✅ Paid</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ═══ SUBMIT TASK VIEW ═══ -->
+    <div class="view" id="view-submit-task">
+      <section class="glass-card section-card">
+        <div class="section-header">
+          <h2>📝 Submit New Task</h2>
+        </div>
+        <form id="task-form" class="task-form">
+          <div class="form-grid">
+            <div class="input-group">
+              <label for="task-date">Date</label>
+              <input type="date" id="task-date" required>
+            </div>
+            <div class="input-group">
+              <label for="task-url">Task URL</label>
+              <input type="url" id="task-url" required placeholder="https://reddit.com/...">
+            </div>
+            <div class="input-group">
+              <label for="task-account">Account Used</label>
+              <select id="task-account" required>
+                <option value="">Select account...</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="task-type">Task Type</label>
+              <select id="task-type" required>
+                <option value="">Select type...</option>
+                <option value="Post">Post</option>
+                <option value="Comment">Comment</option>
+                <option value="Support Comment">Support Comment</option>
+              </select>
+            </div>
+          </div>
+          <div id="task-form-error" class="form-error"></div>
+          <button type="submit" class="btn btn-primary btn-full">📤 Submit Task for Verification</button>
+        </form>
+      </section>
+    </div>
+
+    <!-- ═══ MY TASKS VIEW ═══ -->
+    <div class="view" id="view-my-tasks">
+      <section class="glass-card section-card">
+        <div class="section-header">
+          <h2>📋 My Submitted Tasks</h2>
+          <div class="task-filter-row">
+            <select id="my-task-filter">
+              <option value="">All</option>
+              <option value="Pending">Pending</option>
+              <option value="Verified">Verified</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div id="my-tasks-list"></div>
+      </section>
+    </div>
+
+    <!-- ═══ PAYOUT HISTORY VIEW ═══ -->
+    <div class="view" id="view-history">
+      <section class="glass-card section-card">
+        <div class="section-header">
+          <h2>📜 Payout History</h2>
+        </div>
+        <div id="history-list"></div>
+      </section>
+    </div>
+
+    <!-- ═══ ADMIN VIEW ═══ -->
+    <div class="view" id="view-admin">
+      <!-- Task Verification -->
+      <section class="glass-card section-card">
+        <div class="section-header">
+          <h2>🔍 Task Verification</h2>
+          <div class="task-filter-row">
+            <select id="admin-task-filter">
+              <option value="Pending">Pending</option>
+              <option value="">All</option>
+              <option value="Verified">Verified</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap" id="admin-tasks-list"></div>
+      </section>
+
+      <!-- Payout Rates -->
+      <section class="glass-card section-card">
+        <div class="section-header">
+          <h2>💲 Payout Rates</h2>
+        </div>
+        <div id="rate-cards" class="rate-grid"></div>
+        <button class="btn btn-primary" id="save-rates-btn">💾 Save Rates</button>
+      </section>
+
+      <!-- User Management -->
+      <section class="glass-card section-card">
+        <div class="section-header">
+          <h2>👥 User Management</h2>
+        </div>
+        <div id="admin-users-list"></div>
+      </section>
+
+      <!-- User Detail -->
+      <section class="glass-card section-card" id="admin-user-detail-section" style="display:none">
+        <div class="section-header">
+          <h2>📄 User: <span id="detail-username"></span></h2>
+          <button class="btn btn-ghost btn-sm" id="close-detail-btn">✖ Close</button>
+        </div>
+        <div id="admin-user-detail"></div>
+      </section>
+
+      <!-- All Payouts -->
+      <section class="glass-card section-card">
+        <div class="section-header">
+          <h2>💳 All Payouts</h2>
+        </div>
+        <div id="admin-all-payouts"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ═══ Change Password Modal ═══ -->
+  <div id="password-modal" class="modal-overlay" style="display:none">
+    <div class="modal glass-card">
+      <h3>🔑 Change Admin Password</h3>
+      <form id="change-password-form">
+        <div class="input-group">
+          <label for="new-pass">New Password</label>
+          <input type="password" id="new-pass" required placeholder="Min 6 characters">
+        </div>
+        <div class="input-group">
+          <label for="confirm-new-pass">Confirm New Password</label>
+          <input type="password" id="confirm-new-pass" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancel-password-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Password</button>
+        </div>
+        <div id="password-error" class="form-error"></div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
